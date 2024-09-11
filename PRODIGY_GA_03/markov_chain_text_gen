@@ -1,0 +1,97 @@
+import random
+
+class MarkovChain:
+    def __init__(self):
+        self.chain = {}
+
+    def train(self, sentences):
+        for sentence in sentences:
+            words = sentence.split()
+            for i in range(len(words) - 1):
+                current = words[i]
+                next_word = words[i + 1]
+                self.chain.setdefault(current, {}).setdefault(next_word, 0)
+                self.chain[current][next_word] += 1
+
+    def autocomplete(self, start_phrase, num_suggestions=3, max_words=5):
+        words = start_phrase.split()
+        if not words:
+            return []
+
+        last_word = words[-1]
+        if last_word not in self.chain:
+            return []
+
+        suggestions = []
+        for _ in range(num_suggestions):
+            suggestion = words.copy()
+            current_word = last_word
+
+            for _ in range(max_words):
+                if current_word not in self.chain:
+                    break
+                next_word = random.choices(list(self.chain[current_word].keys()),
+                                           weights=list(self.chain[current_word].values()))[0]
+                suggestion.append(next_word)
+                current_word = next_word
+                if next_word.endswith('.'):  # Stop at end of sentence
+                    break
+
+            suggestions.append(' '.join(suggestion))
+
+        return list(set(suggestions))  # Remove duplicates
+
+    def generate(self, start_word, length):
+        if start_word not in self.chain:
+            return "Start word not in chain"
+        
+        result = [start_word]
+        current_word = start_word
+        
+        for _ in range(length - 1):
+            if current_word not in self.chain:
+                break
+            next_word = random.choices(list(self.chain[current_word].keys()),
+                                       weights=list(self.chain[current_word].values()))[0]
+            result.append(next_word)
+            current_word = next_word
+        
+        return ' '.join(result)
+
+# Example usage
+markov = MarkovChain()
+
+# Training data: list of complete sentences
+training_sentences = [
+    "I love to eat pizza.",
+    "Pizza is my favorite food.",
+    "The cat is on the mat.",
+    "The dog is in the yard.",
+    "I want to go to the park.",
+    "The park is beautiful in spring.",
+    "I love to read books.",
+    "Books are a great source of knowledge.",
+    "I love to travel and explore new places.",
+    "The weather is nice today.",
+    "I enjoy listening to music.",
+    "She likes to paint in her free time.",
+    "They are planning a trip to Europe.",
+    "He is studying for his final exams.",
+    "We should meet for coffee sometime.",
+]
+
+markov.train(training_sentences)
+
+# Test generate
+generated_text = markov.generate("the", 10)
+print("Generated text:", generated_text)
+
+# Test autocomplete
+start_phrases = ["I love", "The cat", "She likes", "We should"]
+
+for phrase in start_phrases:
+    completions = markov.autocomplete(phrase)
+    print(f"\nAutocomplete suggestions for '{phrase}':")
+    for completion in completions:
+        print(f"- {completion}")
+
