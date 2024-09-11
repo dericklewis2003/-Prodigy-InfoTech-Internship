@@ -44,5 +44,21 @@ This Python script implements a basic sentence autocomplete feature using Markov
 2. It then generates autocomplete suggestions for given start phrases.
 3. The Markov chain model predicts likely word sequences based on the training data.
 
+# Neural style transfer -------GA_05
+
+## Introduction
+
+This project applies **style transfer** using a pre-trained model from TensorFlow Hub. Style transfer is a technique where the content of one image is combined with the artistic style of another image to create a stylized version of the original image.
+
+## How It Works
+
+1. **Importing Libraries**: 
+   We use `TensorFlow`, `TensorFlow Hub`, `PIL`, and `matplotlib` for image processing and displaying images.
+
+2. **Loading a Pre-trained Model**:
+   A pre-trained model for image stylization is loaded from TensorFlow Hub. This model performs the style transfer.
+
+   ```python
+   model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
 
 
